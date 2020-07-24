@@ -95,7 +95,6 @@ public class Game extends AbstractGame {
     @Override
     protected void update(Input input) {
 
-
         if (initialScrollPosition == Window.getWidth()){initialScrollPosition=0;}
         DrawOptions loopImage = new DrawOptions();
         loopImage.setSection(initialScrollPosition, 0, Window.getWidth() - initialScrollPosition, Window.getHeight());
@@ -114,15 +113,16 @@ public class Game extends AbstractGame {
         myInfo.drawString("Acceleration (px/sec^2) x: " + (int)(walkAcceleration* 60) + ", y: " + (int)(jumpAcceleration * 60), 20,725);
         myInfo.drawString("Gravity (px/sec^2): " + (int)(gravity * 60), 20, 745);
         myInfo.drawString("Random Coefficient: " + (double)Math.round(0.44 * score * score * 0.0001 * 1000)/1000, 20, 765);
+
         if(!isGameOver) {
             //if ((x>200)&&(input.isDown(Keys.LEFT) || input.isDown(Keys.A))) {
             if (x>xApple || xSpeed>xMaxSpeed) {
-                arrow.draw(900,700, new DrawOptions().setRotation(3.14/2));
+                arrow.draw(762,700, new DrawOptions().setRotation(-3.14/2));
                 xSpeed -= trackingSpeedScale * walkAcceleration;
             }
             //if ((x<Window.getWidth()-200)&&(input.isDown(Keys.RIGHT) || input.isDown(Keys.D))) {
             if (x<xApple || xSpeed<-xMaxSpeed) {
-                arrow.draw(762,700, new DrawOptions().setRotation(-3.14/2));
+                arrow.draw(900,700, new DrawOptions().setRotation(3.14/2));
                 xSpeed += trackingSpeedScale * walkAcceleration;
             }
             //if (input.wasPressed(MouseButtons.LEFT) || input.wasPressed(Keys.UP) || input.wasPressed(Keys.W) || input.wasPressed(Keys.SPACE) || input.wasPressed(Keys.L)) {
@@ -166,15 +166,22 @@ public class Game extends AbstractGame {
         } //GROUND
 
 
-        if (x < 0 || x > Window.getWidth()) {
+        if (x < 0) {
+            x = 0;
             xSpeed *= -bumpDamping;
             bounce.start(false, false);
-        } // LEFT OR RIGHT
+        } else if(x > Window.getWidth()){
+            x = Window.getWidth();
+            xSpeed *= -bumpDamping;
+            bounce.start(false, false);
+
+        }// LEFT OR RIGHT
 
         if (Math.abs(x - xApple) < radius && Math.abs(y - yApple) < radius && (!isGameOver)) {
             // Collision
 
             eat.start(false, false);
+
             Random generator = new Random();
             int maxi=9,min=1;
             double range = 0.1 * (generator.nextInt(maxi + 1 -min) + min);
